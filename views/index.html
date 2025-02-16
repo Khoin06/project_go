@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gọi Groq API với Golang Iris</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Nhập Prompt và Gọi Groq API</h2>
+        <textarea id="prompt" placeholder="Nhập prompt của bạn..."></textarea>
+        <button id="submitBtn">Gửi</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById("submitBtn").addEventListener("click", async () => {
+            const prompt = document.getElementById("prompt").value;
+            const resultDiv = document.getElementById("result");
+
+            if (!prompt.trim()) {
+                alert("Vui lòng nhập prompt!");
+                return;
+            }
+
+            resultDiv.innerHTML = "Đang xử lý..."; // Hiển thị trạng thái loading
+
+            try {
+                const response = await fetch("/generate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Lỗi từ server: " + response.statusText);
+                }
+
+                const data = await response.json();
+                resultDiv.innerHTML = data.response ? data.response : "Không có phản hồi từ API.";
+            } catch (error) {
+                resultDiv.innerHTML = "Lỗi kết nối đến server!";
+                console.error("Lỗi:", error);
+            }
+        });
+    </script>
+</body>
+
+</html>
+
+
+<!-- 
+Backend Golang: Dùng blackfriday/v2 để chuyển Markdown thành HTML.
+Frontend: Dùng innerHTML để hiển thị nội dung Markdown đã parse.
+CSS: Tạo giao diện đẹp hơn cho Markdown.
+-->
